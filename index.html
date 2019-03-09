@@ -132,7 +132,7 @@
         <span class="column is-narrow">
             
             
-            5 minutes read (About 818 words)
+            5 minutes read (About 802 words)
         </span>
         
     </div>
@@ -157,10 +157,10 @@
 <img src="/2019/03/09/movement/Horiz1.png">
 <p>I resolved the uni-directional nature by multiplying by -1 in the initial <code>value &gt; 180</code> test. The only problem this gives is subtracting -90 from 180 certainly does not give the desired value, so I had to multiply the 180 by the current value’s “sign” (<code>value = 180 * Mathf.Sign(value) - value</code>).</p>
 <img src="/2019/03/09/movement/Horiz2.png">
-<p>I only need to multiply <code>vector.x</code> by the value and the horizontal movement is perfect. What about vertical movement, though? It was much easier than I’d have expected. Take the initial value after the 360° test, divide it by 90 which sets the values to the intensity, subtract it by 1 so that the values hit the direction, and multiply it by -1 so it’s facing the direction (<code>value = (value / 90 - 1) * -1</code>).</p>
+<p>What about vertical movement, though? It was much easier than I’d have expected. Take the initial value after the 360° test, divide it by 90 which sets the values to the intensity, subtract it by 1 so that the values hit the direction, and multiply it by -1 so it’s facing the direction (<code>value = (value / 90 - 1) * -1</code>).</p>
 <img src="/2019/03/09/movement/180Angle.png"> <img src="/2019/03/09/movement/Vert1.png"> <img src="/2019/03/09/movement/Vert2.png"> <img src="/2019/03/09/movement/Vert3.png">
 <p>While the respective key is being pressed, I add them to the movement vector. I do so separately for the horizontal and vertical movement so the player can move diagonally, then normalize the values so the player isn’t going super fast while moving diagonally.</p>
-<p>I set the vector.x and vector.z of the total movement vector to this calculated vector, supply the CharacterController’s Move method with it, and the movement works without issue. Allowing the player to reverse or go left is as simple as multiplying the value by -1 while the player is holding the backward or left key. And with that, the movement is complete.</p>
+<p>I set the <code>vector.x</code> and <code>vector.z</code> of the total movement vector to this calculated vector, supply the CharacterController’s Move method with it, and the movement works without issue. Allowing the player to reverse or go left is as simple as multiplying the value by -1 while the player is holding the backward or left key. And with that, the movement is complete.</p>
 
     
     </div>
