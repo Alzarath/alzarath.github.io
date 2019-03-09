@@ -86,7 +86,7 @@
         <span class="column is-narrow">
             
             
-            6 minutes read (About 922 words)
+            6 minutes read (About 932 words)
         </span>
         
     </div>
@@ -100,12 +100,12 @@
 </ul>
 <p>The item collection and collision parts aren’t that interesting, but I’d like to talk about my discoveries in player movement. Player movement is accomplished by <em>moving</em> the player in the direction of a vector. We had the player moving along the X and Z axis when the player presses the designated movement buttons. Unfortunately this means the players rotation does not affect the movement direction.</p>
 <p>We had the player rotating along with the mouse in a pretty simple way. The question was how we got the player to move in the direction they are facing. There didn’t seem to be a convenient Vector3 method to rotate a vector along any one axis depending on the rotation of the player, so what were we to do?</p>
-<p>I decided to change the x and z vector manually depending on the rotation of the player. It may seem obvious now, but in reality it took hours of trial-and-error. Because I want to learn from the results, I’ve decided to describe not only to you why it works the way it does, but to myself.</p>
-<p>Early on, I decided to try to get the player’s <code>transform.rotation</code>. This was actually working fairly well, until I realized that it seems to use a sine wave, which meant the direction is not accurate for horizontal movement. The value of 0.5 was at about 60° rather than 90°. This obviously caused issues. My first thought was to figure out how to somehow counter-act the sine, but I thought of a better, easier idea, which was just use the transform’s <code>eulerAngle</code>.</p>
+<p>I decided to change the x and z vector manually depending on the rotation of the player. My results may seem obvious now, but it took me hours of trial-and-error. Because I want to learn from the results, I’ve decided to describe not only to you why it works the way it does, but to myself.</p>
+<p>Early on, I decided to try to get the player’s <code>transform.rotation</code>. This was actually working fairly well, until I realized that it seems to use a sine wave to determine its rotation. This means the direction is not accurate for horizontal movement. The value of 0.5 was at about 60° rather than 90°. This obviously caused issues. My first thought was to figure out a way to somehow counter-act the sine, but I thought of a better, easier idea, which was to use the transform’s <code>eulerAngle</code>.</p>
 <img src="/2019/03/09/movement/OriginalAngle.png">
 <p>The <code>eulerAngle</code> uses degrees from approximately 0 to 360. The first question was how we translate from these degrees to numbers that would make the player move in the desired direction. I had a revelation that I could invert a capped value by subtracting the value from the cap. This means I could take the value and, when it passes 180, I could make it start going back toward 0 by subtracting the value from 360 (<code>value = 360 - value</code>)</p>
 <img src="/2019/03/09/movement/180Angle.png">
-<p>Now I have a range of values that go from 0 to 180, then back to 0 when doing a complete turn. This is closer to what I want, but not quite there. I applied the same logic, subtracting the value from 180 when it exceeded 90° (<code>value = 180 - value</code>). This means it goes 0-90-0-90-0. This gives me meaningful numbers that I can use to adjust the speed of the z value so the player will move faster when moving “forward” and slower when moving “sideways”.</p>
+<p>Now I have a range of values that go from 0 to 180, then back to 0 when doing a complete turn. This is closer to what I want, but not quite there. I applied the same logic, subtracting the value from 180 when it exceeded 90° (<code>value = 180 - value</code>). This means it goes 0-90-0-90-0. This gives me meaningful numbers that I can use to adjust the speed of the x value so the player will move faster when moving horizontally and slower when moving forward/backward relative to the plane.</p>
 <img src="/2019/03/09/movement/90Angle.png">
 <p>I divided the value by 90 (<code>value = value / 90</code>) so it represents “intensity” of movement from 0 to 1 which I’ll then multiply by the speed of the movement. This works great for horizontal movement, since the intensity is focused on the x axis, but not so well for vertical movement. It also has a major issue with only being able to travel in one direction.</p>
 <img src="/2019/03/09/movement/Horiz1.png">
