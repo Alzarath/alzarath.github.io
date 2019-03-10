@@ -86,7 +86,7 @@
         <span class="column is-narrow">
             
             
-            6 minutes read (About 932 words)
+            6 minutes read (About 938 words)
         </span>
         
     </div>
@@ -98,7 +98,7 @@
 <li>Item Collection</li>
 <li>Collision</li>
 </ul>
-<p>The item collection and collision parts aren’t that interesting, but I’d like to talk about my discoveries in player movement. Player movement is accomplished by <em>moving</em> the player in the direction of a vector. We had the player moving along the X and Z axis when the player presses the designated movement buttons. Unfortunately this means the players rotation does not affect the movement direction.</p>
+<p>The item collection and collision parts aren’t that interesting, but I’d like to talk about my discoveries in player movement.<a id="more"></a> Player movement is accomplished by <em>moving</em> the player in the direction of a vector. We had the player moving along the X and Z axis when the player presses the designated movement buttons. Unfortunately this means the players rotation does not affect the movement direction.</p>
 <p>We had the player rotating along with the mouse in a pretty simple way. The question was how we got the player to move in the direction they are facing. There didn’t seem to be a convenient Vector3 method to rotate a vector along any one axis depending on the rotation of the player, so what were we to do?</p>
 <p>I decided to change the x and z vector manually depending on the rotation of the player. My results may seem obvious now, but it took me hours of trial-and-error. Because I want to learn from the results, I’ve decided to describe not only to you why it works the way it does, but to myself.</p>
 <p>Early on, I decided to try to get the player’s <code>transform.rotation</code>. This was actually working fairly well, until I realized that it seems to use a sine wave to determine its rotation. This means the direction is not accurate for horizontal movement. The value of 0.5 was at about 60° rather than 90°. This obviously caused issues. My first thought was to figure out a way to somehow counter-act the sine, but I thought of a better, easier idea, which was to use the transform’s <code>eulerAngle</code>.</p>
@@ -111,7 +111,7 @@
 <img src="/2019/03/09/movement/Horiz1.png">
 <p>I resolved the uni-directional nature by instead subtracting the xVector by 360 in the initial <code>value &gt; 180</code> test. The only problem this gives is subtracting -90 from 180 certainly does not give the desired value, so I had to multiply the 180 by the current value’s “sign” (<code>value = 180 * Mathf.Sign(value) - value</code>).</p>
 <img src="/2019/03/09/movement/Horiz2.png">
-<p>What about vertical movement, though? It was much easier than I’d have expected. Take the initial value after the 360° test, divide it by 90 which sets the values to the intensity, subtract it by 1 so that the values hit the direction, and multiply it by -1 so it’s facing the direction (<code>value = (value / 90 - 1) * -1</code>).</p>
+<p>What about vertical movement, though? It was much easier than I’d have expected. Take the initial value after the 360° test, divide it by 90 which sets the values to the desired intensity, subtract it by 1 to offset the values so they match the appropriate direction, and multiply it by -1 so it’s facing the correct direction (<code>value = (value / 90 - 1) * -1</code>).</p>
 <img src="/2019/03/09/movement/180Angle.png"> <img src="/2019/03/09/movement/Vert1.png"> <img src="/2019/03/09/movement/Vert2.png"> <img src="/2019/03/09/movement/Vert3.png">
 <p>While the respective key is being pressed, I add them to the movement vector. I do so separately for the horizontal and vertical movement so the player can move diagonally, then normalize the values so the player isn’t going super fast while moving diagonally.</p>
 <p>I set the <code>vector.x</code> and <code>vector.z</code> of the total movement vector to this calculated vector, supply the CharacterController’s Move method with it, and the movement works without issue. Allowing the player to reverse or go left is as simple as multiplying the value by -1 while the player is holding the backward or left key. And with that, the movement is complete.</p>
